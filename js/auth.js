@@ -1,4 +1,5 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import {getFirestore,doc,getDoc,setDoc} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,signOut,updateProfile,sendEmailVerification,setPersistence,browserLocalPersistence,browserSessionPersistence} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 const $=id=>document.getElementById(id);
 const config=window.BARBALHO_FIREBASE_CONFIG;
@@ -11,17 +12,16 @@ const veil=document.createElement("div");veil.id="logoutConfirm";veil.className=
 veil.innerHTML=`<div class="confirm-card" role="dialog" aria-modal="true" aria-labelledby="logoutTitle"><h2 id="logoutTitle">Sair da conta?</h2><p>Tem certeza de que deseja sair do Sistema Barbalho?</p><div class="confirm-actions"><button type="button" id="cancelLogout">Cancelar</button><button type="button" id="confirmLogout">Sim, sair</button></div></div>`;
 document.body.append(veil);
 document.querySelector(".sidebar-footer")?.insertAdjacentHTML("beforeend",'<button type="button" class="logout-button" data-logout title="Sair da conta" aria-label="Sair da conta"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg><span class="logout-label">Sair da conta</span></button>');
-document.querySelector("#page-configuracoes .blank-panel")?.insertAdjacentHTML("beforeend",'<button type="button" class="logout-button" data-logout title="Sair da conta" aria-label="Sair da conta"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg><span class="logout-label">Sair da conta</span></button>');
 const error=$("authError");const setError=t=>error.textContent=t;
-let auth=null,register=false, lastFocus=null;
+let auth=null,db=null,register=false,lastFocus=null;
 function showApp(user){const allowed=!!user && user.emailVerified; document.body.classList.toggle("authenticated",allowed);authView.hidden=allowed;$("verifyEmailPanel").hidden=(!user||allowed);$("loginForm").hidden=!!user&&!allowed;$("googleAuth").hidden=!!user&&!allowed;$("switchAuth").hidden=!!user&&!allowed;
- if(user){const display=user.displayName||user.email||"Usuário";const greeting=document.querySelector(".greeting-copy strong");if(greeting)greeting.textContent=display;const avatar=document.querySelector(".user-greeting .avatar");if(avatar)avatar.textContent=display[0].toUpperCase();}
+ if(user){const display=user.displayName||user.email||"Usuário";const greeting=document.querySelector(".greeting-copy strong");if(greeting)greeting.textContent=display;const avatar=document.querySelector(".user-greeting .avatar");if(avatar){avatar.textContent=display[0].toUpperCase();avatar.style.backgroundImage="";} if(allowed)void loadProfilePhoto(user);}
 }
 function describe(e){const m={"auth/email-already-in-use":"E-mail já cadastrado.","auth/invalid-email":"E-mail inválido.","auth/invalid-credential":"E-mail ou senha incorretos.","auth/weak-password":"Escolha uma senha mais forte.","auth/popup-closed-by-user":"Entrada com Google cancelada.","auth/unauthorized-domain":"Domínio não autorizado no Firebase Authentication.","auth/network-request-failed":"Falha de conexão. Tente novamente."};return m[e?.code]||"Não foi possível autenticar. Confira os dados e tente novamente.";}
 $("switchAuth").onclick=()=>{register=!register;$("authNameWrap").hidden=!register;$("authName").required=register;$("submitAuth").textContent=register?"Criar conta":"Entrar";$("switchAuth").textContent=register?"Já tem conta? Entrar":"Não tem conta? Criar conta";$("authPassword").autocomplete=register?"new-password":"current-password";setError("");};
 if(!ready){setError("Configuração do Firebase pendente. O administrador deve adicionar os dados do aplicativo Web em js/firebase-config.js.");$("submitAuth").disabled=true;$("googleAuth").disabled=true;}
 else{
- try{auth=getAuth(initializeApp(config));onAuthStateChanged(auth,user=>showApp(user));getRedirectResult(auth).catch(e=>setError(describe(e)));}
+ try{const app=initializeApp(config);auth=getAuth(app);db=getFirestore(app);onAuthStateChanged(auth,user=>showApp(user));getRedirectResult(auth).catch(e=>setError(describe(e)));}
  catch(e){setError("Erro ao iniciar o Firebase. Confira a configuração.");$("submitAuth").disabled=true;$("googleAuth").disabled=true;}
 }
 $("loginForm").onsubmit=async e=>{e.preventDefault();if(!auth)return;setError("");$("submitAuth").disabled=true;try{await setPersistence(auth,$("rememberAuth").checked?browserLocalPersistence:browserSessionPersistence);const email=$("authEmail").value.trim();const pass=$("authPassword").value;if(register){const c=await createUserWithEmailAndPassword(auth,email,pass);const name=$("authName").value.trim();if(name)await updateProfile(c.user,{displayName:name});await sendEmailVerification(c.user);}else await signInWithEmailAndPassword(auth,email,pass);}catch(err){setError(describe(err));}finally{$("submitAuth").disabled=false;}};
@@ -37,3 +37,40 @@ $("checkVerified").onclick=async()=>{if(!auth?.currentUser)return;try{await auth
 let lastResend=0;
 $("resendVerification").onclick=async()=>{if(!auth?.currentUser)return;if(Date.now()-lastResend<60000){$("verifyStatus").textContent="Aguarde um minuto antes de solicitar novamente.";return;}try{await sendEmailVerification(auth.currentUser);lastResend=Date.now();$("verifyStatus").textContent="Link enviado. Confira também o spam."; }catch(e){$("verifyStatus").textContent=describe(e);}};
 $("verifyLogout").onclick=async()=>{if(auth)await signOut(auth);};
+
+let profileRequest=0;
+async function loadProfilePhoto(user){
+ const request=++profileRequest;
+ if(!db||!user?.emailVerified)return;
+ try{
+  const snap=await getDoc(doc(db,"usuarios",user.uid,"perfil","foto"));
+  if(request!==profileRequest||auth.currentUser?.uid!==user.uid)return;
+  const image=snap.data()?.imagem;
+  if(typeof image==="string"&&image.startsWith("data:image/jpeg;base64,")&&image.length<200000){
+   const avatar=document.querySelector(".user-greeting .avatar");
+   if(avatar){avatar.textContent="";avatar.style.backgroundImage='url("'+image+'")';avatar.style.backgroundSize="cover";avatar.style.backgroundPosition="center";}
+  }
+ }catch(e){const msg=$("profileFeedback");if(msg)msg.textContent="Não foi possível carregar a foto. Confira as regras do Firestore.";}
+}
+const compressImage=file=>new Promise((resolve,reject)=>{
+ const url=URL.createObjectURL(file),img=new Image();
+ img.onload=()=>{try{
+  const canvas=document.createElement("canvas");canvas.width=256;canvas.height=256;
+  const ctx=canvas.getContext("2d"),s=Math.min(img.width,img.height);
+  ctx.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,256,256);
+  URL.revokeObjectURL(url);resolve(canvas.toDataURL("image/jpeg",0.7));
+ }catch(e){URL.revokeObjectURL(url);reject(e);}};
+ img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error("Imagem inválida"));};
+ img.src=url;
+});
+$("saveProfilePhoto")?.addEventListener("click",async()=>{
+ const user=auth?.currentUser, file=$("profilePhoto")?.files?.[0],status=$("profileFeedback"),btn=$("saveProfilePhoto");
+ if(!user?.emailVerified){status.textContent="Confirme seu e-mail antes de salvar.";return;}
+ if(!file||!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>3*1024*1024){status.textContent="Selecione JPG, PNG ou WebP de até 3 MB.";return;}
+ btn.disabled=true;status.textContent="Salvando...";
+ try{const imagem=await compressImage(file);if(imagem.length>=200000)throw new Error("Imagem muito grande");
+ await setDoc(doc(db,"usuarios",user.uid,"perfil","foto"),{imagem});
+ await loadProfilePhoto(user);status.textContent="Foto salva.";
+ }catch(e){status.textContent="Não foi possível salvar a foto. Verifique as regras no Firestore.";}
+ finally{btn.disabled=false;}
+});

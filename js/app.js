@@ -10,7 +10,7 @@
  const collapse=document.getElementById('sidebarCollapse');
  collapse?.addEventListener('click',()=>{const collapsed=document.querySelector('.app-shell')?.classList.toggle('sidebar-collapsed')??false;document.body.classList.toggle('sidebar-collapsed',collapsed);collapse.setAttribute('aria-pressed',String(collapsed));collapse.setAttribute('aria-label',collapsed?'Expandir menu lateral':'Recolher menu lateral');});
  const themeSelect=document.getElementById('themeSelect');
- const applyTheme=theme=>{document.documentElement.dataset.theme=theme;document.body.dataset.theme=theme;};
+ const applyTheme=theme=>{document.documentElement.dataset.theme=theme;document.body.dataset.theme=theme;document.body.classList.toggle('dark',theme==='escuro');};
  const savedTheme=localStorage.getItem('barbalho-theme');
  if(savedTheme==='claro'||savedTheme==='escuro'){themeSelect.value=savedTheme;applyTheme(savedTheme);}
  document.getElementById('applyTheme')?.addEventListener('click',()=>{const theme=themeSelect.value;if(!['claro','escuro'].includes(theme))return;applyTheme(theme);localStorage.setItem('barbalho-theme',theme);const feedback=document.getElementById('themeFeedback');if(feedback)feedback.textContent='Tema aplicado com sucesso.';});
