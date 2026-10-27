@@ -73,3 +73,11 @@ body:not(.authenticated) #app,body:not(.authenticated) .bottom-nav,body:not(.aut
  .app-shell.sidebar-collapsed .sidebar-footer .logout-button svg{display:block!important;margin:0!important;flex:0 0 20px!important}
  .app-shell.sidebar-collapsed .sidebar-nav button .sidebar-label{display:none!important}
 }
+
+/* Sair no topo exclusivamente em telas pequenas */
+.mobile-logout{display:none!important}
+@media(max-width:899px){
+ .topbar .mobile-logout{display:inline-flex!important;align-items:center;justify-content:center;gap:6px;min-height:35px;padding:6px 11px;border-radius:11px;color:var(--expense);border:1px solid var(--line);background:var(--surface-soft);font-size:12px;font-weight:650;white-space:nowrap}
+ .topbar .mobile-logout svg{width:16px;height:16px}
+ .topbar .top-actions>.muted{display:none}
+}
