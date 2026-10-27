@@ -1,0 +1,14 @@
+/* Autenticacao Barbalho: impede acesso visual ate o login real. */
+body:not(.authenticated) #app,body:not(.authenticated) .bottom-nav,body:not(.authenticated) .skip-link{display:none!important}
+.auth-view[hidden],.confirm-overlay[hidden]{display:none!important}
+.auth-view{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;background:linear-gradient(145deg,#edf7f1,#f6f8f8);padding:18px;overflow:auto;font-family:Urbanist,system-ui,sans-serif;color:#172820}
+.auth-card{width:min(100%,420px);background:white;border:1px solid #dce9e0;border-radius:24px;padding:32px;box-shadow:0 16px 52px #163c2521}
+.auth-logo{width:48px;height:48px;background:#3d9d6a;color:white;border-radius:13px;display:grid;place-items:center;font-size:27px;font-weight:700}
+.auth-card h1{font-size:26px;margin:16px 0 5px}.auth-subtitle{color:#61746b;margin:0 0 22px}.auth-form{display:grid;gap:14px}
+.auth-form label{display:grid;gap:7px;font-size:14px;font-weight:600}.auth-form input{font:inherit;padding:12px;border:1px solid #cbdad0;border-radius:11px;background:white;color:#172820;width:100%}
+.auth-card button,.logout-button{font:inherit;cursor:pointer;border-radius:11px;padding:12px;font-weight:700}
+.auth-primary{background:#237848;color:white;border:0;margin-top:6px}.auth-google{background:white;border:1px solid #bdcec3;width:100%;margin-top:12px;color:#172820}.auth-link{background:none;border:0;color:#237848;width:100%;margin-top:6px}
+.auth-error{color:#b42318;font-size:13px;min-height:18px;margin:12px 0 0}.logout-button{margin:12px;color:#b42318;background:transparent;border:1px solid #e6c0b9}
+.confirm-overlay{position:fixed;inset:0;z-index:11000;background:#0008;display:grid;place-items:center;padding:20px}
+.confirm-card{background:white;color:#192a22;border-radius:18px;padding:26px;max-width:390px;width:100%;box-shadow:0 16px 48px #0003}.confirm-card h2{margin:0 0 10px}.confirm-card p{color:#53645b}
+.confirm-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:22px}.confirm-actions button{border:1px solid #ccd8d0;padding:10px 16px;border-radius:9px;cursor:pointer;background:white}.confirm-actions #confirmLogout{background:#ad2d27;border-color:#ad2d27;color:white}
