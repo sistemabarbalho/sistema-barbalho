@@ -14,3 +14,26 @@ body{min-height:100vh}#app{display:block!important}.page[hidden]{display:none!im
 /* Feedback de salvamento sempre visível em desktop e mobile */
 #page-configuracoes #profileFeedback{display:block!important;visibility:visible!important;opacity:1!important;min-height:22px;max-width:100%;white-space:normal;overflow-wrap:anywhere;color:var(--text);font-size:13px;font-weight:650}
 #page-configuracoes #saveProfilePhoto{position:relative;z-index:1;cursor:pointer;pointer-events:auto}
+
+/* Legibilidade de titulos, orientacoes e controles da base nos dois temas. */
+.blank-panel{border-color:var(--line);background:var(--surface);color:var(--text)}
+.blank-panel h2{color:var(--text)}
+.blank-panel p{color:var(--muted)}
+.simple-mark{color:#062817}
+#page-configuracoes .settings-field label{color:var(--text)}
+#page-configuracoes #themeSelect{background:var(--surface);color:var(--text);border-color:var(--line-strong)}
+#page-configuracoes #themeSelect option{background:var(--surface);color:var(--text)}
+#page-configuracoes #profilePhoto{background:var(--surface);color:var(--text);border-color:var(--line-strong)}
+#page-configuracoes #profilePhoto::file-selector-button{
+ border:1px solid var(--line-strong);
+ border-radius:8px;
+ padding:7px 10px;
+ margin-right:8px;
+ background:var(--surface-soft);
+ color:var(--text);
+ cursor:pointer;
+ font:inherit;
+}
+#page-configuracoes #profilePhoto::file-selector-button:hover{background:var(--surface-tint)}
+#page-configuracoes #saveProfilePhoto{background:var(--surface-soft);color:var(--text);border-color:var(--line-strong)}
+#page-configuracoes #saveProfilePhoto:hover{background:var(--surface-tint)}
