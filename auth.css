@@ -275,3 +275,33 @@ body.dark .confirm-card{color-scheme:dark}
   height:20px!important;
  }
 }
+
+/* Identidade Barbalho & Couto - botões discretos em bronze/dourado. */
+.auth-logo{background:#8A642C;color:#fff}
+.auth-primary,
+#page-configuracoes .theme-apply{
+ background:#75572B;
+ border-color:#75572B;
+ color:#fff;
+}
+.auth-primary:hover,
+#page-configuracoes .theme-apply:hover{
+ background:#624821;
+ border-color:#624821;
+ color:#fff;
+}
+body.dark .auth-logo{background:#D6B476;color:#292014}
+body.dark .auth-primary,
+body.dark #page-configuracoes .theme-apply{
+ background:#D6B476;
+ border-color:#D6B476;
+ color:#292014;
+}
+body.dark .auth-primary:hover,
+body.dark #page-configuracoes .theme-apply:hover{
+ background:#E3C58C;
+ border-color:#E3C58C;
+ color:#292014;
+}
+.auth-link{color:var(--accent)}
+body.dark .auth-link{color:var(--accent)}

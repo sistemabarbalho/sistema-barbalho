@@ -1,31 +1,32 @@
 :root{
   font-family:"Urbanist",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  color:#101010;
-  background:#f7f7f5;
+  /* Fachada Barbalho & Couto: pedra clara, madeira e latão acetinado. */
+  color:#2D2C2A;
+  background:#F3F1EC;
   color-scheme:light;
-  --bg:#f7f7f5;
-  --surface:#ffffff;
-  --surface-soft:#f1f2f0;
-  --surface-tint:#eef0f2;
-  --line:#e9e9e6;
-  --line-strong:#d9dbd8;
-  --text:#101010;
-  --muted:#5f6862;
-  --muted-2:#626a65;
-  --black:#000000;
-  --on-strong:#ffffff;
-  --accent:#1bff85;
-  --accent-ink:#062817;
-  --accent-soft:#ecfff5;
-  --income:#087a4a;
-  --income-soft:#ecfff5;
-  --expense:#b52640;
-  --expense-soft:#fff1f3;
-  --warning:#80560d;
-  --warning-soft:#fff8e6;
-  --focus:#1bff85;
-  --shadow-sm:0 1px 2px rgba(0,0,0,.025),0 8px 24px rgba(0,0,0,.025);
-  --shadow-md:0 24px 70px rgba(0,0,0,.12);
+  --bg:#F3F1EC;
+  --surface:#FDFBF7;
+  --surface-soft:#F0ECE5;
+  --surface-tint:#E9E3D8;
+  --line:#DCD6CB;
+  --line-strong:#C9C0B2;
+  --text:#2D2C2A;
+  --muted:#625F59;
+  --muted-2:#716A60;
+  --black:#292927;
+  --on-strong:#FCF8F2;
+  --accent:#8A642C;
+  --accent-ink:#FFFFFF;
+  --accent-soft:#F2E7D3;
+  --income:#326E56;
+  --income-soft:#E3F1E9;
+  --expense:#A74148;
+  --expense-soft:#F8E8E8;
+  --warning:#80581C;
+  --warning-soft:#F6EBD8;
+  --focus:#A27A3F;
+  --shadow-sm:0 1px 2px rgba(55,45,33,.025),0 8px 24px rgba(55,45,33,.035);
+  --shadow-md:0 24px 70px rgba(38,33,28,.14);
   --r-sm:10px;
   --r-md:14px;
   --r-lg:20px;
@@ -33,15 +34,16 @@
 }
 *{box-sizing:border-box}
 html{background:var(--bg);scroll-behavior:smooth}
-html[data-theme="escuro"]{background:#0f100f;color-scheme:dark}
-html[data-theme="claro"]{background:#f7f7f5;color-scheme:light}
+html[data-theme="escuro"]{background:#181919;color-scheme:dark}
+html[data-theme="claro"]{background:#F3F1EC;color-scheme:light}
 body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 body.dark{
-  --bg:#0f100f;--surface:#171817;--surface-soft:#1d1f1d;--surface-tint:#252725;
-  --line:#292c29;--line-strong:#3a3d3a;--text:#f7f7f5;--muted:#b3bab3;--muted-2:#a0a7a0;
-  --black:#f7f7f5;--on-strong:#101010;--accent:#1bff85;--accent-ink:#052616;--accent-soft:#0c2a1a;
-  --income:#55e9a2;--income-soft:#102a1e;--expense:#ff9fab;--expense-soft:#361d20;
-  --warning:#efc56f;--warning-soft:#312916;color-scheme:dark
+  /* Grafite da fachada, madeira escura e pequenos detalhes dourados. */
+  --bg:#181919;--surface:#232424;--surface-soft:#2B2C2B;--surface-tint:#343432;
+  --line:#42413F;--line-strong:#5D5A55;--text:#F4F0E8;--muted:#CBC3B5;--muted-2:#AFA899;
+  --black:#E8E2D6;--on-strong:#232322;--accent:#D6B476;--accent-ink:#292014;--accent-soft:#383124;
+  --income:#90C4A7;--income-soft:#24382E;--expense:#F0A5A6;--expense-soft:#422C30;
+  --warning:#DEC28A;--warning-soft:#393122;--focus:#D6B476;color-scheme:dark
 }
 [hidden]{display:none!important}
 button,input,select{font:inherit}
@@ -439,3 +441,7 @@ body.dark #page-receitas .expense-icon-action,body.dark #page-receitas .expense-
 .delete-confirm-actions button:disabled{opacity:.55;cursor:wait}
 #deleteConfirmError:not([hidden]){margin-top:12px;color:var(--expense);font-weight:600}
 @media(max-width:380px){.delete-confirm-dialog{padding:20px}.delete-confirm-actions{flex-direction:column}}
+
+/* Identidade visual contida: dourado apenas nos detalhes, sem fundos chamativos. */
+.dashboard-heading .eyebrow,
+.greeting-copy .eyebrow{color:var(--accent)}
