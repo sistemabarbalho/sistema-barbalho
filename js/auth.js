@@ -83,10 +83,13 @@ const compressImage=file=>new Promise((resolve,reject)=>{
  img.src=url;
 });
 $("saveProfilePhoto")?.addEventListener("click",async()=>{
+ const statusNow=$("profileFeedback");
+ if(statusNow){statusNow.textContent="Botão acionado. Verificando arquivo e conexão...";statusNow.hidden=false;statusNow.style.display="block";}
+
  const user=auth?.currentUser,file=$("profilePhoto")?.files?.[0],status=$("profileFeedback"),btn=$("saveProfilePhoto");
  if(!user?.emailVerified){status.textContent="Confirme seu e-mail antes de salvar.";return;}
  if(!file||!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>3*1024*1024){status.textContent="Selecione JPG, PNG ou WebP de até 3 MB.";return;}
- btn.disabled=true;status.textContent="Salvando...";
+ btn.disabled=true;status.textContent="Salvando foto no banco...";
  try{
   await user.getIdToken(true); // atualiza as credenciais antes da operação
   const imagem=await compressImage(file);
@@ -115,5 +118,5 @@ $("profilePhoto")?.addEventListener("change",event=>{
  if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>3*1024*1024){
   status.textContent="Selecione JPG, PNG ou WebP de até 3 MB.";return;
  }
- status.textContent="Imagem selecionada. Clique em Salvar foto para atualizar sua foto de perfil.";
+ status.textContent="Imagem selecionada: "+file.name+". Clique em Salvar foto.";status.hidden=false;status.style.display="block";
 });
