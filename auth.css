@@ -12,3 +12,5 @@ body:not(.authenticated) #app,body:not(.authenticated) .bottom-nav,body:not(.aut
 .confirm-overlay{position:fixed;inset:0;z-index:11000;background:#0008;display:grid;place-items:center;padding:20px}
 .confirm-card{background:white;color:#192a22;border-radius:18px;padding:26px;max-width:390px;width:100%;box-shadow:0 16px 48px #0003}.confirm-card h2{margin:0 0 10px}.confirm-card p{color:#53645b}
 .confirm-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:22px}.confirm-actions button{border:1px solid #ccd8d0;padding:10px 16px;border-radius:9px;cursor:pointer;background:white}.confirm-actions #confirmLogout{background:#ad2d27;border-color:#ad2d27;color:white}
+
+.auth-form label[hidden]{display:none!important}
