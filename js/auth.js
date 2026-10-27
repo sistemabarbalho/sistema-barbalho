@@ -1,5 +1,5 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import {getFirestore,doc,getDoc,setDoc} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+import {getFirestore,doc,getDoc,getDocFromServer,setDoc} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,signOut,updateProfile,sendEmailVerification,setPersistence,browserLocalPersistence,browserSessionPersistence} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 const $=id=>document.getElementById(id);
 const config=window.BARBALHO_FIREBASE_CONFIG;
@@ -39,6 +39,14 @@ $("resendVerification").onclick=async()=>{if(!auth?.currentUser)return;if(Date.n
 $("verifyLogout").onclick=async()=>{if(auth)await signOut(auth);};
 
 let profileRequest=0;
+function renderProfileImage(image) {
+ const avatar=document.querySelector(".user-greeting .avatar");
+ if(!avatar)return;
+ avatar.textContent="";
+ avatar.style.backgroundImage='url("'+image+'")';
+ avatar.style.backgroundSize="cover";
+ avatar.style.backgroundPosition="center";
+}
 async function loadProfilePhoto(user){
  const request=++profileRequest;
  if(!db||!user?.emailVerified)return;
@@ -47,10 +55,21 @@ async function loadProfilePhoto(user){
   if(request!==profileRequest||auth.currentUser?.uid!==user.uid)return;
   const image=snap.data()?.imagem;
   if(typeof image==="string"&&image.startsWith("data:image/jpeg;base64,")&&image.length<200000){
-   const avatar=document.querySelector(".user-greeting .avatar");
-   if(avatar){avatar.textContent="";avatar.style.backgroundImage='url("'+image+'")';avatar.style.backgroundSize="cover";avatar.style.backgroundPosition="center";}
+   renderProfileImage(image);
   }
- }catch(e){const msg=$("profileFeedback");if(msg)msg.textContent="Não foi possível carregar a foto. Confira as regras do Firestore.";}
+ }catch(e){
+  const msg=$("profileFeedback");
+  if(msg)msg.textContent="Não foi possível carregar a foto: "+photoError(e);
+ }
+}
+function photoError(e){
+ switch(e?.code){
+  case "permission-denied":return "acesso negado. Verifique as regras do Firestore e a conta conectada.";
+  case "unauthenticated":return "sessão expirada. Entre novamente.";
+  case "unavailable":return "sem conexão com o Firestore. Tente novamente.";
+  case "resource-exhausted":return "limite temporário de operações atingido.";
+  default:return "falha de comunicação com o banco. Tente novamente.";
+ }
 }
 const compressImage=file=>new Promise((resolve,reject)=>{
  const url=URL.createObjectURL(file),img=new Image();
@@ -64,17 +83,32 @@ const compressImage=file=>new Promise((resolve,reject)=>{
  img.src=url;
 });
 $("saveProfilePhoto")?.addEventListener("click",async()=>{
- const user=auth?.currentUser, file=$("profilePhoto")?.files?.[0],status=$("profileFeedback"),btn=$("saveProfilePhoto");
+ const user=auth?.currentUser,file=$("profilePhoto")?.files?.[0],status=$("profileFeedback"),btn=$("saveProfilePhoto");
  if(!user?.emailVerified){status.textContent="Confirme seu e-mail antes de salvar.";return;}
  if(!file||!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>3*1024*1024){status.textContent="Selecione JPG, PNG ou WebP de até 3 MB.";return;}
  btn.disabled=true;status.textContent="Salvando...";
- try{const imagem=await compressImage(file);if(imagem.length>=200000)throw new Error("Imagem muito grande");
- await setDoc(doc(db,"usuarios",user.uid,"perfil","foto"),{imagem});
- await loadProfilePhoto(user);status.textContent="Foto salva.";
- }catch(e){status.textContent="Não foi possível salvar no Firestore. A foto anterior foi mantida. Confira as regras publicadas no Firebase Console.";}
- finally{btn.disabled=false;}
+ try{
+  await user.getIdToken(true); // atualiza as credenciais antes da operação
+  const imagem=await compressImage(file);
+  if(imagem.length>=200000)throw new Error("photo-too-large");
+  const ref=doc(db,"usuarios",user.uid,"perfil","foto");
+  await setDoc(ref,{imagem});
+  // Após a gravação bem-sucedida, o avatar só é atualizado se a conta continua igual.
+  if(auth.currentUser?.uid!==user.uid)throw new Error("account-changed");
+  renderProfileImage(imagem);
+  status.textContent="Foto salva nesta conta. Verificando sincronização...";
+  try{
+   const confirmacao=await getDocFromServer(ref);
+   if(confirmacao.data()?.imagem===imagem){
+    status.textContent="Foto salva e sincronizada. Ela deve permanecer após atualizar a página.";
+   }else{
+    status.textContent="A foto foi enviada, mas a confirmação no banco não corresponde. Atualize a página para conferir.";
+   }
+  }catch(e){status.textContent="Foto enviada, mas não foi possível confirmar a leitura: "+photoError(e);}
+ }catch(e){
+  status.textContent=e?.message==="photo-too-large"?"A imagem compactada ficou grande demais. Tente outra foto.":e?.message==="account-changed"?"A conta mudou durante o envio. Faça login novamente.":"Não foi possível salvar: "+photoError(e);
+ }finally{btn.disabled=false;}
 });
-
 $("profilePhoto")?.addEventListener("change",event=>{
  const file=event.target.files?.[0],status=$("profileFeedback");
  if(!file)return;
