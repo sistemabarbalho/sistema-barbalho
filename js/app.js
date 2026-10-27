@@ -8,8 +8,13 @@
  }
  buttons.forEach(button=>button.addEventListener('click',()=>open(button.dataset.page)));
  const collapse=document.getElementById('sidebarCollapse');
- collapse?.addEventListener('click',()=>{const collapsed=document.body.classList.toggle('sidebar-collapsed');collapse.setAttribute('aria-pressed',String(collapsed));});
- document.getElementById('themeSelect')?.addEventListener('change',event=>{document.documentElement.dataset.theme=event.target.value;document.body.dataset.theme=event.target.value;});
+ collapse?.addEventListener('click',()=>{const collapsed=document.querySelector('.app-shell')?.classList.toggle('sidebar-collapsed')??false;document.body.classList.toggle('sidebar-collapsed',collapsed);collapse.setAttribute('aria-pressed',String(collapsed));collapse.setAttribute('aria-label',collapsed?'Expandir menu lateral':'Recolher menu lateral');});
+ const themeSelect=document.getElementById('themeSelect');
+ const applyTheme=theme=>{document.documentElement.dataset.theme=theme;document.body.dataset.theme=theme;};
+ const savedTheme=localStorage.getItem('barbalho-theme');
+ if(savedTheme==='claro'||savedTheme==='escuro'){themeSelect.value=savedTheme;applyTheme(savedTheme);}
+ document.getElementById('applyTheme')?.addEventListener('click',()=>{const theme=themeSelect.value;if(!['claro','escuro'].includes(theme))return;applyTheme(theme);localStorage.setItem('barbalho-theme',theme);const feedback=document.getElementById('themeFeedback');if(feedback)feedback.textContent='Tema aplicado com sucesso.';});
+ themeSelect?.addEventListener('change',()=>{const feedback=document.getElementById('themeFeedback');if(feedback)feedback.textContent='Clique em Aplicar tema para salvar.';});
  window.lucide?.createIcons();
  open('inicio');
 })();
