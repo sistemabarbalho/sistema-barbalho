@@ -19,3 +19,19 @@ body:not(.authenticated) #app,body:not(.authenticated) .bottom-nav,body:not(.aut
 .verify-email-panel{padding:15px;margin-top:12px;background:#f2f8f4;border:1px solid #c4decf;border-radius:12px}
 .verify-email-panel[hidden],#loginForm[hidden],#googleAuth[hidden],#switchAuth[hidden]{display:none!important}
 .verify-email-panel p{font-size:14px}.verify-email-panel button{margin:5px;background:#fff;border:1px solid #aac6b3}
+
+/* Sidebar recolhida por inteiro, inclusive controles inferiores */
+@media(min-width:900px){
+.app-shell.sidebar-collapsed{grid-template-columns:76px minmax(0,1fr)}
+.app-shell.sidebar-collapsed .desktop-sidebar{width:76px;min-width:0;padding-inline:10px}
+.app-shell.sidebar-collapsed .sidebar-footer{min-width:0}
+.app-shell.sidebar-collapsed .sidebar-footer [data-page="configuracoes"],
+.app-shell.sidebar-collapsed .sidebar-footer .logout-button{width:100%;min-width:0;height:46px;margin:6px 0;padding:0;display:flex;align-items:center;justify-content:center;gap:0;font-size:0;overflow:hidden}
+.app-shell.sidebar-collapsed .sidebar-footer .logout-button svg{width:20px;height:20px;flex-shrink:0}
+.app-shell.sidebar-collapsed .sidebar-footer .sidebar-label{display:none}
+.desktop-sidebar .sidebar-footer{display:flex;flex-direction:column;gap:3px}
+.desktop-sidebar .sidebar-footer [data-page="configuracoes"]{border:0;border-radius:13px;background:transparent;color:var(--muted);padding:9px 11px;display:flex;align-items:center;gap:11px;text-align:left;min-height:46px;font-size:12px;cursor:pointer;width:100%}
+.desktop-sidebar .sidebar-footer [data-page="configuracoes"][aria-current]{background:var(--black);color:var(--on-strong)}
+.desktop-sidebar .sidebar-footer .logout-button{width:100%;margin:4px 0;min-height:46px;text-align:left}
+}
+.theme-apply{background:#24804d;color:#fff;padding:11px 20px;border:0;border-radius:11px;font:inherit;font-weight:700;cursor:pointer;margin-top:5px}
