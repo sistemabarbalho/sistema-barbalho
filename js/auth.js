@@ -82,13 +82,14 @@ const compressImage=file=>new Promise((resolve,reject)=>{
  img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error("Imagem inválida"));};
  img.src=url;
 });
-$("saveProfilePhoto")?.addEventListener("click",async()=>{
+async function saveProfilePhoto(){
  const statusNow=$("profileFeedback");
  if(statusNow){statusNow.textContent="Botão acionado. Verificando arquivo e conexão...";statusNow.hidden=false;statusNow.style.display="block";}
 
  const user=auth?.currentUser,file=$("profilePhoto")?.files?.[0],status=$("profileFeedback"),btn=$("saveProfilePhoto");
+ if(!db){status.textContent="O Firestore nao foi inicializado. Verifique a conexao e recarregue a pagina.";return;}
  if(!user?.emailVerified){status.textContent="Confirme seu e-mail antes de salvar.";return;}
- if(!file||!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>3*1024*1024){status.textContent="Selecione JPG, PNG ou WebP de até 3 MB.";return;}
+ if(!file||!(["image/jpeg","image/png","image/webp"].includes(file.type)||/\.(jpe?g|png|webp)$/i.test(file.name))||file.size>3*1024*1024){status.textContent="Selecione JPG, PNG ou WebP de até 3 MB.";return;}
  btn.disabled=true;status.textContent="Salvando foto no banco...";
  try{
   await user.getIdToken(true); // atualiza as credenciais antes da operação
@@ -98,6 +99,7 @@ $("saveProfilePhoto")?.addEventListener("click",async()=>{
   await setDoc(ref,{imagem});
   // Após a gravação bem-sucedida, o avatar só é atualizado se a conta continua igual.
   if(auth.currentUser?.uid!==user.uid)throw new Error("account-changed");
+  profileRequest++;
   renderProfileImage(imagem);
   status.textContent="Foto salva nesta conta. Verificando sincronização...";
   try{
@@ -111,12 +113,6 @@ $("saveProfilePhoto")?.addEventListener("click",async()=>{
  }catch(e){
   status.textContent=e?.message==="photo-too-large"?"A imagem compactada ficou grande demais. Tente outra foto.":e?.message==="account-changed"?"A conta mudou durante o envio. Faça login novamente.":"Não foi possível salvar: "+photoError(e);
  }finally{btn.disabled=false;}
-});
-$("profilePhoto")?.addEventListener("change",event=>{
- const file=event.target.files?.[0],status=$("profileFeedback");
- if(!file)return;
- if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>3*1024*1024){
-  status.textContent="Selecione JPG, PNG ou WebP de até 3 MB.";return;
- }
- status.textContent="Imagem selecionada: "+file.name+". Clique em Salvar foto.";status.hidden=false;status.style.display="block";
-});
+}
+// O botao e controlado pelo script comum para nunca ficar sem feedback.
+window.BarbalhoPhoto=Object.freeze({save:saveProfilePhoto});
