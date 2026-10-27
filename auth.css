@@ -83,3 +83,74 @@ body:not(.authenticated) #app,body:not(.authenticated) .bottom-nav,body:not(.aut
 }
 
 @media(max-width:899px){.topbar .top-actions{margin-left:auto;flex:0 0 auto}.topbar .mobile-logout{width:38px;height:38px;min-width:38px;min-height:38px;padding:0!important;gap:0;border-radius:12px}.topbar .mobile-logout svg{width:19px;height:19px}}
+
+/* Contraste consistente nos dois temas: formularios e dialogos respeitam
+   os tokens da superficie em vez de manter fundo claro com texto claro. */
+.auth-view{
+ background:linear-gradient(145deg,var(--bg),var(--surface-soft));
+ color:var(--text);
+ color-scheme:light;
+}
+body.dark .auth-view{color-scheme:dark}
+.auth-card{
+ background:var(--surface);
+ color:var(--text);
+ border-color:var(--line-strong);
+}
+.auth-card h1,
+.auth-card label,
+.auth-card strong{color:var(--text)}
+.auth-subtitle,
+.verify-email-panel p{color:var(--muted)}
+.auth-form input{
+ background:var(--bg);
+ border-color:var(--line-strong);
+ color:var(--text);
+}
+.auth-form input::placeholder{color:var(--muted)}
+.auth-google,
+.verify-email-panel button{
+ background:var(--surface-soft);
+ border-color:var(--line-strong);
+ color:var(--text);
+}
+.auth-google:hover,
+.verify-email-panel button:hover{background:var(--surface-tint)}
+.auth-link{color:var(--income)}
+.auth-view #authError{color:var(--expense)}
+.auth-logo{background:#237848;color:#fff}
+.verify-email-panel{
+ background:var(--surface-soft);
+ border-color:var(--line-strong);
+ color:var(--text);
+}
+.confirm-card{
+ background:var(--surface);
+ color:var(--text);
+ border:1px solid var(--line-strong);
+ color-scheme:light;
+}
+body.dark .confirm-card{color-scheme:dark}
+.confirm-card h2{color:var(--text)}
+.confirm-card p{color:var(--muted)}
+.confirm-actions button{
+ background:var(--surface-soft);
+ border-color:var(--line-strong);
+ color:var(--text);
+}
+.confirm-actions button:hover{background:var(--surface-tint)}
+.confirm-actions #confirmLogout,
+.confirm-actions #confirmLogout:hover{
+ background:#ad2d27;
+ border-color:#ad2d27;
+ color:#fff;
+}
+.desktop-sidebar .logout-button{
+ color:var(--expense);
+ border-color:color-mix(in srgb,var(--expense) 33%,var(--line));
+ background:transparent;
+}
+.desktop-sidebar .logout-button:hover{
+ background:var(--expense-soft);
+ color:var(--expense);
+}
