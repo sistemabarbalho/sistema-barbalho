@@ -1,5 +1,40 @@
 // Interface apenas. Sem login, Firebase, API, persistencia ou banco de dados.
 (() => {
+
+// O controle de arquivo precisa responder mesmo se os modulos Firebase falharem.
+// Esta parte roda no script comum, independente da autenticacao.
+ const photoInput=document.getElementById('profilePhoto');
+ const photoButton=document.getElementById('saveProfilePhoto');
+ const photoStatus=document.getElementById('profileFeedback');
+ const informPhoto=message=>{
+  if(photoStatus){photoStatus.textContent=message;photoStatus.hidden=false;}
+ };
+ const validPhoto=file=>file
+  && (['image/jpeg','image/png','image/webp'].includes(file.type)
+   || /\.(jpe?g|png|webp)$/i.test(file.name))
+  && file.size<=3*1024*1024;
+ photoInput?.addEventListener('change',()=>{
+  const file=photoInput.files?.[0];
+  if(!file){informPhoto('Nenhuma imagem selecionada.');return;}
+  if(!validPhoto(file)){informPhoto('Escolha uma foto JPG, PNG ou WebP com ate 3 MB.');return;}
+  informPhoto('Foto selecionada: '+file.name+'. Clique em Salvar foto.');
+ });
+ photoButton?.addEventListener('click',async()=>{
+  // Feedback imediato, antes de qualquer tentativa de rede.
+  informPhoto('Clique reconhecido. Preparando o salvamento...');
+  const file=photoInput?.files?.[0];
+  if(!validPhoto(file)){
+   informPhoto('Selecione uma foto JPG, PNG ou WebP de ate 3 MB antes de salvar.');
+   return;
+  }
+  const save=window.BarbalhoPhoto?.save;
+  if(typeof save!=='function'){
+   informPhoto('O modulo de fotos nao carregou neste navegador. Atualize com Ctrl+F5 e verifique bloqueadores de scripts do Firebase.');
+   return;
+  }
+  try{await save();}
+  catch(err){informPhoto('Falha inesperada ao iniciar o salvamento da foto. Atualize a pagina e tente novamente.');}
+ });
  const buttons=[...document.querySelectorAll('[data-page]')];
  function open(page){
   document.querySelectorAll('.page').forEach(node=>node.hidden=node.id!==`page-${page}`);
