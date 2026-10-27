@@ -71,6 +71,7 @@ function photoError(e){
   default:return "falha de comunicação com o banco. Tente novamente.";
  }
 }
+const MAX_PROFILE_FILE_BYTES=100*1024*1024;
 const compressImage=file=>new Promise((resolve,reject)=>{
  const url=URL.createObjectURL(file),img=new Image();
  img.onload=()=>{try{
@@ -89,7 +90,7 @@ async function saveProfilePhoto(){
  const user=auth?.currentUser,file=$("profilePhoto")?.files?.[0],status=$("profileFeedback"),btn=$("saveProfilePhoto");
  if(!db){status.textContent="O Firestore nao foi inicializado. Verifique a conexao e recarregue a pagina.";return;}
  if(!user?.emailVerified){status.textContent="Confirme seu e-mail antes de salvar.";return;}
- if(!file||!(["image/jpeg","image/png","image/webp"].includes(file.type)||/\.(jpe?g|png|webp)$/i.test(file.name))||file.size>3*1024*1024){status.textContent="Selecione JPG, PNG ou WebP de até 3 MB.";return;}
+ if(!file||!(["image/jpeg","image/png","image/webp"].includes(file.type)||/\.(jpe?g|png|webp)$/i.test(file.name))||file.size>MAX_PROFILE_FILE_BYTES){status.textContent="Selecione JPG, PNG ou WebP de até 100 MB.";return;}
  btn.disabled=true;status.textContent="Salvando foto no banco...";
  try{
   await user.getIdToken(true); // atualiza as credenciais antes da operação

@@ -9,14 +9,15 @@
  const informPhoto=message=>{
   if(photoStatus){photoStatus.textContent=message;photoStatus.hidden=false;}
  };
+ const MAX_PROFILE_FILE_BYTES=100*1024*1024; // 100 MB originais; imagem salva continua compactada
  const validPhoto=file=>file
   && (['image/jpeg','image/png','image/webp'].includes(file.type)
    || /\.(jpe?g|png|webp)$/i.test(file.name))
-  && file.size<=3*1024*1024;
+  && file.size<=MAX_PROFILE_FILE_BYTES;
  photoInput?.addEventListener('change',()=>{
   const file=photoInput.files?.[0];
   if(!file){informPhoto('Nenhuma imagem selecionada.');return;}
-  if(!validPhoto(file)){informPhoto('Escolha uma foto JPG, PNG ou WebP com ate 3 MB.');return;}
+  if(!validPhoto(file)){informPhoto('Escolha uma foto JPG, PNG ou WebP com ate 100 MB.');return;}
   informPhoto('Foto selecionada: '+file.name+'. Clique em Salvar foto.');
  });
  photoButton?.addEventListener('click',async()=>{
@@ -24,7 +25,7 @@
   informPhoto('Clique reconhecido. Preparando o salvamento...');
   const file=photoInput?.files?.[0];
   if(!validPhoto(file)){
-   informPhoto('Selecione uma foto JPG, PNG ou WebP de ate 3 MB antes de salvar.');
+   informPhoto('Selecione uma foto JPG, PNG ou WebP de ate 100 MB antes de salvar.');
    return;
   }
   const save=window.BarbalhoPhoto?.save;
