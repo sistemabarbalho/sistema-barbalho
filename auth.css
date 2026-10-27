@@ -35,3 +35,6 @@ body:not(.authenticated) #app,body:not(.authenticated) .bottom-nav,body:not(.aut
 .desktop-sidebar .sidebar-footer .logout-button{width:100%;margin:4px 0;min-height:46px;text-align:left}
 }
 .theme-apply{background:#24804d;color:#fff;padding:11px 20px;border:0;border-radius:11px;font:inherit;font-weight:700;cursor:pointer;margin-top:5px}
+
+.desktop-sidebar .logout-button{display:flex;align-items:center;gap:10px}
+@media(min-width:900px){.app-shell.sidebar-collapsed .desktop-sidebar .logout-label{display:none}.app-shell.sidebar-collapsed .desktop-sidebar .sidebar-footer [data-page="configuracoes"] svg{width:20px;height:20px;flex-shrink:0}}
