@@ -10,3 +10,7 @@ body{min-height:100vh}#app{display:block!important}.page[hidden]{display:none!im
 #page-configuracoes .profile-field{border-top:1px solid var(--line);padding-top:15px}
 #page-configuracoes #profilePhoto{font-size:12px;max-width:100%}
 .user-greeting .avatar{background-repeat:no-repeat}
+
+/* Feedback de salvamento sempre visível em desktop e mobile */
+#page-configuracoes #profileFeedback{display:block!important;visibility:visible!important;opacity:1!important;min-height:22px;max-width:100%;white-space:normal;overflow-wrap:anywhere;color:var(--text);font-size:13px;font-weight:650}
+#page-configuracoes #saveProfilePhoto{position:relative;z-index:1;cursor:pointer;pointer-events:auto}
