@@ -173,19 +173,24 @@ body.dark .confirm-card{color-scheme:dark}
   flex:0 0 46px!important;
   margin:0 auto!important;
   padding:0!important;
+  gap:0!important; /* O nome oculto nao pode deslocar o icone N. */
   align-self:center;
   display:flex;
   align-items:center;
   justify-content:center!important;
  }
+ .app-shell.sidebar-collapsed .sidebar-brand .sidebar-label {
+  display:none!important;
+ }
  .app-shell.sidebar-collapsed .sidebar-brand .brand-mark {
   box-sizing:border-box;
-  width:38px!important;
-  min-width:38px!important;
-  max-width:38px!important;
-  height:38px!important;
-  flex:0 0 38px!important;
+  width:42px!important;
+  min-width:42px!important;
+  max-width:42px!important;
+  height:42px!important;
+  flex:0 0 42px!important;
   margin:0!important;
+  font-size:24px;
   display:grid;
   place-items:center;
  }
