@@ -71,19 +71,15 @@ $("saveProfilePhoto")?.addEventListener("click",async()=>{
  try{const imagem=await compressImage(file);if(imagem.length>=200000)throw new Error("Imagem muito grande");
  await setDoc(doc(db,"usuarios",user.uid,"perfil","foto"),{imagem});
  await loadProfilePhoto(user);status.textContent="Foto salva.";
- }catch(e){status.textContent="Prévia visível apenas nesta sessão. Não foi possível salvar no Firestore; confira se publicou as regras no Firebase Console.";}
+ }catch(e){status.textContent="Não foi possível salvar no Firestore. A foto anterior foi mantida. Confira as regras publicadas no Firebase Console.";}
  finally{btn.disabled=false;}
 });
 
-$("profilePhoto")?.addEventListener("change",async event=>{
- const file=event.target.files?.[0],status=$("profileFeedback"),user=auth?.currentUser;
+$("profilePhoto")?.addEventListener("change",event=>{
+ const file=event.target.files?.[0],status=$("profileFeedback");
  if(!file)return;
- if(!user?.emailVerified){status.textContent="Confirme seu e-mail antes de usar a foto.";return;}
- if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>3*1024*1024){status.textContent="Selecione JPG, PNG ou WebP de até 3 MB.";return;}
- try{
-  const image=await compressImage(file);
-  const avatar=document.querySelector(".user-greeting .avatar");
-  if(avatar){avatar.textContent="";avatar.style.backgroundImage='url("'+image+'")';avatar.style.backgroundSize="cover";avatar.style.backgroundPosition="center";}
-  status.textContent="Prévia aplicada ao lado de Boas-vindas. Clique em Salvar foto para manter na conta.";
- }catch(e){status.textContent="Não foi possível abrir essa imagem.";}
+ if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>3*1024*1024){
+  status.textContent="Selecione JPG, PNG ou WebP de até 3 MB.";return;
+ }
+ status.textContent="Imagem selecionada. Clique em Salvar foto para atualizar sua foto de perfil.";
 });
