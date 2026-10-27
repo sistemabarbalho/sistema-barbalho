@@ -14,3 +14,8 @@ body:not(.authenticated) #app,body:not(.authenticated) .bottom-nav,body:not(.aut
 .confirm-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:22px}.confirm-actions button{border:1px solid #ccd8d0;padding:10px 16px;border-radius:9px;cursor:pointer;background:white}.confirm-actions #confirmLogout{background:#ad2d27;border-color:#ad2d27;color:white}
 
 .auth-form label[hidden]{display:none!important}
+
+.remember-option{display:flex!important;align-items:center;gap:9px;font-weight:500!important;font-size:14px!important;margin-top:12px}.remember-option input{width:16px;height:16px}
+.verify-email-panel{padding:15px;margin-top:12px;background:#f2f8f4;border:1px solid #c4decf;border-radius:12px}
+.verify-email-panel[hidden],#loginForm[hidden],#googleAuth[hidden],#switchAuth[hidden]{display:none!important}
+.verify-email-panel p{font-size:14px}.verify-email-panel button{margin:5px;background:#fff;border:1px solid #aac6b3}
