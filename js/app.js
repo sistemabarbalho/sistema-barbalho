@@ -37,26 +37,43 @@
   catch(err){informPhoto('Falha inesperada ao iniciar o salvamento da foto. Atualize a pagina e tente novamente.');}
  });
 
- // Interface de consulta: sem registros, sem busca no banco e sem dados fictícios.
+ // A consulta ainda não possui integração ao banco. Exibir resultados só após uma pesquisa válida.
  const debtForm=document.getElementById('debtSearchForm');
+ const debtResults=document.querySelector('#page-pagina1 .debt-results');
  const debtFeedback=document.getElementById('debtFeedback');
+ const debtValidation=document.getElementById('debtValidation');
  const emptyMessage='Ainda não existem devedores cadastrados. Os resultados aparecerão aqui quando os registros forem adicionados.';
+ const showDebtValidation=message=>{
+  if(!debtValidation)return;
+  debtValidation.textContent=message;
+  debtValidation.hidden=!message;
+ };
  debtForm?.addEventListener('submit',event=>{
   event.preventDefault();
-  if(!debtFeedback)return;
+  if(!debtResults||!debtFeedback)return;
   const start=document.getElementById('debtInicio')?.value;
   const end=document.getElementById('debtFim')?.value;
   if(start && end && start>end){
-   debtFeedback.textContent='A data inicial não pode ser posterior à data final. Ajuste o período informado.';
+   debtResults.hidden=true;
+   showDebtValidation('A data inicial não pode ser posterior à data final. Ajuste o período informado.');
    document.getElementById('debtInicio')?.focus();
    return;
   }
   const hasFilter=[...new FormData(debtForm).values()].some(value=>String(value).trim()!=='');
-  debtFeedback.textContent=hasFilter
-   ?'Os filtros foram preenchidos, mas ainda não existem devedores cadastrados. A consulta estará disponível quando os registros forem adicionados.'
-   :'Preencha pelo menos um campo para buscar. Ainda não há registros cadastrados.';
+  if(!hasFilter){
+   debtResults.hidden=true;
+   showDebtValidation('Preencha pelo menos um campo para buscar.');
+   return;
+  }
+  showDebtValidation('');
+  debtFeedback.textContent='Nenhum cadastro encontrado. A consulta aos devedores estará disponível quando os registros forem adicionados ao sistema.';
+  debtResults.hidden=false;
  });
- debtForm?.addEventListener('reset',()=>{if(debtFeedback)debtFeedback.textContent=emptyMessage;});
+ debtForm?.addEventListener('reset',()=>{
+  if(debtResults)debtResults.hidden=true;
+  if(debtFeedback)debtFeedback.textContent=emptyMessage;
+  showDebtValidation('');
+ });
  const buttons=[...document.querySelectorAll('[data-page]')];
  function open(page){
   document.querySelectorAll('.page').forEach(node=>node.hidden=node.id!==`page-${page}`);
