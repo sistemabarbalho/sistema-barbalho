@@ -15,10 +15,43 @@ document.body.append(veil);
 document.querySelector(".sidebar-footer")?.insertAdjacentHTML("beforeend",'<button type="button" class="logout-button" data-logout title="Sair da conta" aria-label="Sair da conta"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg><span class="logout-label">Sair da conta</span></button>');
 const error=$("authError");const setError=t=>error.textContent=t;
 let auth=null,db=null,register=false,lastFocus=null;
+let profileRequest=0,activeProfilePhoto="",previewPreviousFocus=null;
 const startupSplash=$("startupSplash");
 const finishStartup=()=>{if(startupSplash)startupSplash.hidden=true;};
-function showApp(user){const allowed=!!user && user.emailVerified; document.body.classList.toggle("authenticated",allowed);authView.hidden=allowed;$("verifyEmailPanel").hidden=(!user||allowed);$("loginForm").hidden=!!user&&!allowed;$("googleAuth").hidden=!!user&&!allowed;$("switchAuth").hidden=!!user&&!allowed;
+
+const previewOverlay=$("profilePreviewOverlay");
+function closeProfilePreview(restoreFocus=true){
+ if(!previewOverlay||previewOverlay.hidden)return;
+ previewOverlay.hidden=true;
+ document.body.classList.remove("profile-preview-open");
+ if(restoreFocus&&previewPreviousFocus?.isConnected)previewPreviousFocus.focus();
+ previewPreviousFocus=null;
+}
+function openProfilePreview(){
+ if(!auth?.currentUser?.emailVerified||!previewOverlay)return;
+ previewPreviousFocus=document.activeElement;
+ const img=$("profilePreviewImage"),empty=$("profilePreviewEmpty");
+ if(activeProfilePhoto){
+  img.src=activeProfilePhoto;img.hidden=false;empty.hidden=true;
+ }else{
+  img.hidden=true;img.removeAttribute("src");empty.hidden=false;
+  $("profilePreviewInitial").textContent=(document.querySelector(".greeting-copy strong")?.textContent||"N").charAt(0).toUpperCase();
+ }
+ previewOverlay.hidden=false;
+ document.body.classList.add("profile-preview-open");
+ $("closeProfilePreview").focus();
+}
+$("profilePreviewButton")?.addEventListener("click",openProfilePreview);
+$("closeProfilePreview")?.addEventListener("click",()=>closeProfilePreview());
+previewOverlay?.addEventListener("click",e=>{if(e.target===previewOverlay)closeProfilePreview();});
+previewOverlay?.addEventListener("keydown",e=>{
+ if(e.key==="Escape"){e.preventDefault();closeProfilePreview();}
+ else if(e.key==="Tab"){e.preventDefault();$("closeProfilePreview").focus();}
+});
+
+function showApp(user){closeProfilePreview(false);activeProfilePhoto="";profileRequest++;const allowed=!!user && user.emailVerified; document.body.classList.toggle("authenticated",allowed);authView.hidden=allowed;$("verifyEmailPanel").hidden=(!user||allowed);$("loginForm").hidden=!!user&&!allowed;$("googleAuth").hidden=!!user&&!allowed;$("switchAuth").hidden=!!user&&!allowed;
  if(user){const display=user.displayName||user.email||"Usuário";const greeting=document.querySelector(".greeting-copy strong");if(greeting)greeting.textContent=display;const avatar=document.querySelector(".user-greeting .avatar");if(avatar){avatar.textContent=display[0].toUpperCase();avatar.style.backgroundImage="";} if(allowed)void loadProfilePhoto(user);}
+ else{const avatar=document.querySelector(".user-greeting .avatar");if(avatar){avatar.textContent="N";avatar.style.backgroundImage="";}}
 }
 function describe(e){const m={"auth/email-already-in-use":"E-mail já cadastrado.","auth/invalid-email":"E-mail inválido.","auth/invalid-credential":"E-mail ou senha incorretos.","auth/weak-password":"Escolha uma senha mais forte.","auth/popup-closed-by-user":"Entrada com Google cancelada.","auth/unauthorized-domain":"Domínio não autorizado no Firebase Authentication.","auth/network-request-failed":"Falha de conexão. Tente novamente."};return m[e?.code]||"Não foi possível autenticar. Confira os dados e tente novamente.";}
 $("switchAuth").onclick=()=>{register=!register;$("authNameWrap").hidden=!register;$("authName").required=register;$("submitAuth").textContent=register?"Criar conta":"Entrar";$("switchAuth").textContent=register?"Já tem conta? Entrar":"Não tem conta? Criar conta";$("authPassword").autocomplete=register?"new-password":"current-password";setError("");};
@@ -57,8 +90,8 @@ let lastResend=0;
 $("resendVerification").onclick=async()=>{if(!auth?.currentUser)return;if(Date.now()-lastResend<60000){$("verifyStatus").textContent="Aguarde um minuto antes de solicitar novamente.";return;}try{await sendEmailVerification(auth.currentUser);lastResend=Date.now();$("verifyStatus").textContent="Link enviado. Confira também o spam."; }catch(e){$("verifyStatus").textContent=describe(e);}};
 $("verifyLogout").onclick=async()=>{if(auth)await signOut(auth);};
 
-let profileRequest=0;
 function renderProfileImage(image) {
+ activeProfilePhoto=image;
  const avatar=document.querySelector(".user-greeting .avatar");
  if(!avatar)return;
  avatar.textContent="";

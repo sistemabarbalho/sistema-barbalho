@@ -445,3 +445,18 @@ body.dark #page-receitas .expense-icon-action,body.dark #page-receitas .expense-
 /* Identidade visual contida: dourado apenas nos detalhes, sem fundos chamativos. */
 .dashboard-heading .eyebrow,
 .greeting-copy .eyebrow{color:var(--accent)}
+
+/* Visualização ampliada da foto de perfil — mantém a identidade dos temas. */
+.user-greeting button.avatar{min-height:40px;min-width:40px;padding:0;line-height:1;cursor:pointer;box-shadow:none;transition:border-color .15s ease,box-shadow .15s ease}
+.user-greeting button.avatar:hover{background-color:var(--surface-tint);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+body.profile-preview-open{overflow:hidden}
+.profile-preview-overlay{position:fixed;inset:0;z-index:10500;display:grid;place-items:center;padding:20px;background:rgba(12,12,12,.72)}
+.profile-preview-card{width:min(100%,440px);max-height:calc(100dvh - 40px);overflow:auto;padding:20px;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow-md)}
+.profile-preview-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.profile-preview-heading h2{margin:0;font-size:18px;font-weight:650}
+.profile-preview-close{width:42px;height:42px;min-width:42px;min-height:42px;padding:0;border-radius:50%;font-size:27px;line-height:1;background:var(--surface-soft);color:var(--text)}
+.profile-preview-image{display:block;width:min(100%,340px);height:auto;aspect-ratio:1;object-fit:cover;margin:20px auto 6px;border:3px solid var(--line);border-radius:50%}
+.profile-preview-empty{text-align:center;color:var(--muted);padding:20px 0 4px}
+.profile-preview-initial{display:grid;place-items:center;width:min(70vw,210px);height:min(70vw,210px);margin:0 auto 14px;border-radius:50%;background:var(--surface-tint);color:var(--text);font-size:74px;font-weight:700}
+.profile-preview-empty p{font-size:13px;margin:0}
+@media(max-width:480px){.profile-preview-card{padding:16px;border-radius:18px}.profile-preview-image{width:min(100%,290px)}}
