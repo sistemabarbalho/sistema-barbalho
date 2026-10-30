@@ -37,19 +37,69 @@
   catch(err){informPhoto('Falha inesperada ao iniciar o salvamento da foto. Atualize a pagina e tente novamente.');}
  });
 
- // A consulta ainda não possui integração ao banco. Exibir resultados só após uma pesquisa válida.
+ // Busca real continua sem cadastros; modelo fictício é visualizado somente por ação explícita.
  const debtForm=document.getElementById('debtSearchForm');
  const debtResults=document.querySelector('#page-pagina1 .debt-results');
  const debtFeedback=document.getElementById('debtFeedback');
  const debtValidation=document.getElementById('debtValidation');
+ const debtDemoButton=document.getElementById('debtDemoToggle');
+ const debtDemoResults=document.getElementById('debtDemoResults');
+ const debtDetailOverlay=document.getElementById('debtDetailOverlay');
+ const debtDetailClose=document.getElementById('debtCloseDetails');
+ const debtDetailDone=document.getElementById('debtDoneDetails');
+ let debtPreviousFocus=null;
  const emptyMessage='Ainda não existem devedores cadastrados. Os resultados aparecerão aqui quando os registros forem adicionados.';
  const showDebtValidation=message=>{
   if(!debtValidation)return;
   debtValidation.textContent=message;
   debtValidation.hidden=!message;
  };
+ const hideDebtDemo=()=>{
+  if(debtDemoResults)debtDemoResults.hidden=true;
+  debtDemoButton?.setAttribute('aria-expanded','false');
+ };
+ const closeDebtDetails=()=>{
+  if(!debtDetailOverlay || debtDetailOverlay.hidden)return;
+  debtDetailOverlay.hidden=true;
+  document.body.classList.remove('debt-dialog-open');
+  if(debtPreviousFocus?.isConnected)debtPreviousFocus.focus();
+  debtPreviousFocus=null;
+ };
+ const showDebtDetails=()=>{
+  if(!debtDetailOverlay)return;
+  debtPreviousFocus=document.activeElement;
+  debtDetailOverlay.hidden=false;
+  document.body.classList.add('debt-dialog-open');
+  debtDetailClose?.focus();
+ };
+ debtDemoButton?.addEventListener('click',()=>{
+  if(!debtDemoResults)return;
+  const show=debtDemoResults.hidden;
+  debtDemoResults.hidden=!show;
+  debtDemoButton.setAttribute('aria-expanded',String(show));
+  if(debtResults)debtResults.hidden=true;
+  showDebtValidation('');
+  if(show)debtDemoResults.scrollIntoView({behavior:'smooth',block:'nearest'});
+ });
+ document.getElementById('debtOpenDetails')?.addEventListener('click',showDebtDetails);
+ debtDetailClose?.addEventListener('click',closeDebtDetails);
+ debtDetailDone?.addEventListener('click',closeDebtDetails);
+ debtDetailOverlay?.addEventListener('click',event=>{
+  if(event.target===debtDetailOverlay)closeDebtDetails();
+ });
+ document.addEventListener('keydown',event=>{
+  if(!debtDetailOverlay || debtDetailOverlay.hidden)return;
+  if(event.key==='Escape'){event.preventDefault();closeDebtDetails();return;}
+  if(event.key==='Tab'){
+   const close=debtDetailClose,done=debtDetailDone;
+   if(!close||!done)return;
+   if(event.shiftKey && document.activeElement===close){event.preventDefault();done.focus();}
+   else if(!event.shiftKey && document.activeElement===done){event.preventDefault();close.focus();}
+  }
+ });
  debtForm?.addEventListener('submit',event=>{
   event.preventDefault();
+  hideDebtDemo();
   if(!debtResults||!debtFeedback)return;
   const start=document.getElementById('debtInicio')?.value;
   const end=document.getElementById('debtFim')?.value;
@@ -72,6 +122,8 @@
  debtForm?.addEventListener('reset',()=>{
   if(debtResults)debtResults.hidden=true;
   if(debtFeedback)debtFeedback.textContent=emptyMessage;
+  hideDebtDemo();
+  closeDebtDetails();
   showDebtValidation('');
  });
  const buttons=[...document.querySelectorAll('[data-page]')];
