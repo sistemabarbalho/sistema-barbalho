@@ -36,6 +36,27 @@
   try{await save();}
   catch(err){informPhoto('Falha inesperada ao iniciar o salvamento da foto. Atualize a pagina e tente novamente.');}
  });
+
+ // Interface de consulta: sem registros, sem busca no banco e sem dados fictícios.
+ const debtForm=document.getElementById('debtSearchForm');
+ const debtFeedback=document.getElementById('debtFeedback');
+ const emptyMessage='Ainda não existem devedores cadastrados. Os resultados aparecerão aqui quando os registros forem adicionados.';
+ debtForm?.addEventListener('submit',event=>{
+  event.preventDefault();
+  if(!debtFeedback)return;
+  const start=document.getElementById('debtInicio')?.value;
+  const end=document.getElementById('debtFim')?.value;
+  if(start && end && start>end){
+   debtFeedback.textContent='A data inicial não pode ser posterior à data final. Ajuste o período informado.';
+   document.getElementById('debtInicio')?.focus();
+   return;
+  }
+  const hasFilter=[...new FormData(debtForm).values()].some(value=>String(value).trim()!=='');
+  debtFeedback.textContent=hasFilter
+   ?'Os filtros foram preenchidos, mas ainda não existem devedores cadastrados. A consulta estará disponível quando os registros forem adicionados.'
+   :'Preencha pelo menos um campo para buscar. Ainda não há registros cadastrados.';
+ });
+ debtForm?.addEventListener('reset',()=>{if(debtFeedback)debtFeedback.textContent=emptyMessage;});
  const buttons=[...document.querySelectorAll('[data-page]')];
  function open(page){
   document.querySelectorAll('.page').forEach(node=>node.hidden=node.id!==`page-${page}`);
